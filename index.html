@@ -789,13 +789,13 @@
 
         // ===== SCROLL TO ZOOM TRANSITION =====
         let accumulatedScroll = 0;
-        const zoomThreshold = 50;
+        const zoomThreshold = 15;
 
         function handleScroll(deltaY) {
             if (currentSlide !== 5 || !slide5Active) return;
 
             if (deltaY > 0) {
-                accumulatedScroll += deltaY * 0.01;
+                accumulatedScroll += deltaY * 0.05;
                 zoomLevel = 1 + accumulatedScroll;
 
                 const wrapper = document.getElementById('zoomWrapper');
