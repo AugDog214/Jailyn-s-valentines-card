@@ -294,7 +294,7 @@
         }
 
         .particle-text.dispersed {
-            opacity: 0;
+            opacity: 0.4;
         }
 
         /* Floating hearts - FULLSCREEN */
@@ -708,19 +708,20 @@
             const rect = textEl.getBoundingClientRect();
             const canvasRect = canvas.getBoundingClientRect();
 
-            // Create particles
+            // Create particles - lots of tiny grainy particles
             particlesArray = [];
-            const numParticles = 150;
+            const numParticles = 600;
 
             for (let i = 0; i < numParticles; i++) {
                 particlesArray.push({
                     x: (rect.left - canvasRect.left) + rect.width / 2 + (Math.random() - 0.5) * rect.width,
                     y: (rect.top - canvasRect.top) + rect.height / 2 + (Math.random() - 0.5) * rect.height,
-                    vx: (Math.random() - 0.5) * 8,
-                    vy: (Math.random() - 0.5) * 8,
-                    size: Math.random() * 4 + 2,
-                    color: `hsl(${330 + Math.random() * 30}, 80%, ${50 + Math.random() * 20}%)`,
-                    life: 1
+                    vx: (Math.random() - 0.5) * 3,
+                    vy: (Math.random() - 0.5) * 3,
+                    size: Math.random() * 2 + 0.5,
+                    color: `hsl(${330 + Math.random() * 30}, 80%, ${50 + Math.random() * 30}%)`,
+                    life: 1,
+                    maxLife: 0.7 + Math.random() * 0.3
                 });
             }
 
@@ -734,17 +735,29 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             particlesArray.forEach((p, index) => {
+                // Brownian motion - random jitter like gas molecules
+                p.vx += (Math.random() - 0.5) * 0.5;
+                p.vy += (Math.random() - 0.5) * 0.5;
+
+                // Slight upward drift like smoke/gas
+                p.vy -= 0.02;
+
+                // Apply velocity
                 p.x += p.vx;
                 p.y += p.vy;
-                p.vx *= 0.98;
-                p.vy *= 0.98;
-                p.life -= 0.01;
+
+                // Damping
+                p.vx *= 0.99;
+                p.vy *= 0.99;
+
+                // Slower fade
+                p.life -= 0.005;
 
                 if (p.life > 0) {
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                     ctx.fillStyle = p.color;
-                    ctx.globalAlpha = p.life;
+                    ctx.globalAlpha = p.life * 0.8;
                     ctx.fill();
                     ctx.globalAlpha = 1;
                 }
